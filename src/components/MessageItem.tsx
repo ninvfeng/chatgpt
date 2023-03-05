@@ -35,11 +35,11 @@ export default ({ role, message, showRetry, onRetry }: Props) => {
         <div class={`shrink-0 w-7 h-7 mt-4 rounded-full op-80 ${roleClass[role]}`}></div>
         <div class="message prose text-slate break-words overflow-hidden" innerHTML={htmlString()} />
       </div>
-      { showRetry?.() && onRetry && (
+      {showRetry?.() && onRetry && (
         <div class="flex items-center justify-end px-3 mb-2">
           <div onClick={onRetry} class="flex items-center gap-1 px-2 py-0.5 op-70 border border-slate text-slate rounded-md text-sm cursor-pointer hover:bg-slate/10">
             <IconRefresh />
-            <span>Regenerate</span>
+            <span>重新生成</span>
           </div>
         </div>
       )}

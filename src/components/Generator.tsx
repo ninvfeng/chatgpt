@@ -62,7 +62,7 @@ export default () => {
           if (char) {
             setCurrentAssistantMessage(currentAssistantMessage() + char)
           }
-          window.scrollTo({top: document.body.scrollHeight, behavior: 'smooth'})
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
         }
         done = readerDone
       }
@@ -147,8 +147,8 @@ export default () => {
         when={!loading()}
         fallback={() => (
           <div class="h-12 my-4 flex gap-4 items-center justify-center bg-slate bg-op-15 text-slate rounded-sm">
-            <span>AI is thinking...</span>
-            <div class="px-2 py-0.5 border border-slate text-slate rounded-md text-sm op-70 cursor-pointer hover:bg-slate/10" onClick={stopStreamFetch}>Stop</div>
+            <span>AI思考中...</span>
+            <div class="px-2 py-0.5 border border-slate text-slate rounded-md text-sm op-70 cursor-pointer hover:bg-slate/10" onClick={stopStreamFetch}>停止</div>
           </div>
         )}
       >
@@ -157,7 +157,7 @@ export default () => {
             ref={inputRef!}
             disabled={loading()}
             onKeyDown={handleKeydown}
-            placeholder="Enter something..."
+            placeholder="可输入任意问题 [Shift+回车]可换行"
             autocomplete="off"
             autofocus
             onInput={() => {
@@ -181,10 +181,10 @@ export default () => {
             placeholder:op-30
             scroll-pa-8px
           />
-          <button onClick={handleButtonClick} disabled={loading()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm>
-            Send
+          <button onClick={handleButtonClick} disabled={loading()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm w-22>
+            发送
           </button>
-          <button title="Clear" onClick={clear} disabled={loading()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm>
+          <button title="清空" onClick={clear} disabled={loading()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm>
             <IconClear />
           </button>
         </div>
