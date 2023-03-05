@@ -204,7 +204,7 @@ export default () => {
             ref={inputRef!}
             disabled={systemRoleEditing()}
             onKeyDown={handleKeydown}
-            placeholder="可输入任意问题 [Shift+回车]可换行"
+            placeholder="可输入任意问题"
             autocomplete="off"
             autofocus
             onInput={() => {
@@ -228,7 +228,7 @@ export default () => {
             placeholder:op-30
             scroll-pa-8px
           />
-          <button onClick={handleButtonClick} disabled={systemRoleEditing()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm w-20>
+          <button onClick={handleButtonClick} disabled={systemRoleEditing()} h-12 px-2 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm w-20>
             发送
           </button>
           <button title="Clear" onClick={clear} disabled={systemRoleEditing()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm>
