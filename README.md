@@ -29,3 +29,6 @@ A demo repo based on [OpenAI GPT-3.5 Turbo API](https://platform.openai.com/docs
 ## License
 
 MIT
+
+## 随便问问的问题来自: K-Render
+https://qddmercny4.feishu.cn/sheets/shtcnMklYu0WsXEDUXXanrSEB2m

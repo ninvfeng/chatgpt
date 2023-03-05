@@ -1,8 +1,11 @@
 import type { ChatMessage } from '@/types'
 import { createSignal, Index, Show } from 'solid-js'
 import IconClear from './icons/Clear'
+import IconRand from './icons/Rand'
 import MessageItem from './MessageItem'
 import SystemRoleSettings from './SystemRoleSettings'
+import Qustion from './Question.js'
+
 
 export default () => {
   let inputRef: HTMLTextAreaElement
@@ -136,8 +139,33 @@ export default () => {
     }
   }
 
+  const randQuestion = () => {
+    clear()
+    inputRef.value = Qustion[Math.floor(Math.random() * Qustion.length)]
+    inputRef.style.height = 'auto';
+    inputRef.style.height = inputRef.scrollHeight + 'px';
+    // setMessageList([
+    //   ...messageList(),
+    //   {
+    //     role: 'user',
+    //     content: Qustion[Math.floor(Math.random() * Qustion.length)],
+    //   },
+    // ])
+    // requestWithLatestMessage()
+  }
+
   return (
-    <div my-6>
+    <div my-3>
+      <div class="flex items-center">
+        <p mt-1 text-slate op-60>欢迎来到人工智能时代</p>
+        <div onClick={randQuestion}>
+          <span class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2 ">
+            <IconRand />
+            <span>随便问问</span>
+          </span>
+        </div>
+      </div>
+
       <SystemRoleSettings
         canEdit={() => messageList().length === 0}
         systemRoleEditing={systemRoleEditing}
@@ -145,6 +173,7 @@ export default () => {
         currentSystemRoleSettings={currentSystemRoleSettings}
         setCurrentSystemRoleSettings={setCurrentSystemRoleSettings}
       />
+
       <Index each={messageList()}>
         {(message, index) => (
           <MessageItem
@@ -199,7 +228,7 @@ export default () => {
             placeholder:op-30
             scroll-pa-8px
           />
-          <button onClick={handleButtonClick} disabled={systemRoleEditing()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm>
+          <button onClick={handleButtonClick} disabled={systemRoleEditing()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm w-20>
             发送
           </button>
           <button title="Clear" onClick={clear} disabled={systemRoleEditing()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 text-slate rounded-sm>
