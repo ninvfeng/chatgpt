@@ -75,7 +75,15 @@ export default () => {
           if (char) {
             setCurrentAssistantMessage(currentAssistantMessage() + char)
           }
-          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+
+          let scrollTop = document.documentElement.scrollTop || document.body.scrollTop
+          let windowHeight = window.innerHeight || document.documentElement.clientHeight || document.body.clientHeight
+          let scrollHeight = document.documentElement.scrollHeight || document.body.scrollHeight
+          if (scrollHeight - (scrollTop + windowHeight) <= 100) {
+            // 滚动条距离底部小于等于50px
+            window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' })
+          }
+
         }
         done = readerDone
       }
