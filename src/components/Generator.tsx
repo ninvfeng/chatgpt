@@ -170,9 +170,9 @@ export default () => {
   return (
     <div my-3>
       <div class="flex items-center">
-        <p mt-1 text-slate op-60>欢迎来到人工智能时代</p>
+        <p mt-1 op-60>欢迎来到人工智能时代</p>
         <div onClick={randQuestion}>
-          <span class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2 ">
+          <span class="inline-flex items-center justify-center gap-1 text-sm  bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2 ">
             <IconRand />
             <span>随便问问</span>
           </span>
