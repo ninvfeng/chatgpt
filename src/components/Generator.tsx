@@ -240,7 +240,7 @@ export default () => {
             dark="placeholder:op-30"
             scroll-pa-8px
           />
-          <button onClick={handleButtonClick} disabled={systemRoleEditing()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 rounded-sm w-20>
+          <button onClick={handleButtonClick} disabled={systemRoleEditing()} h-12 px-2 py-2 bg-slate bg-op-15 hover:bg-op-20 rounded-sm w-20>
             发送
           </button>
           <button title="Clear" onClick={clear} disabled={systemRoleEditing()} h-12 px-4 py-2 bg-slate bg-op-15 hover:bg-op-20 rounded-sm>
