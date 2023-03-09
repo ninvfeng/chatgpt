@@ -35,11 +35,6 @@
 </style>
 
 <script>
-  const darkSchema =
-    window.matchMedia &&
-    window.matchMedia("(prefers-color-scheme: dark)").matches;
-  document.documentElement.classList.toggle("dark", darkSchema);
-
   const listenColorSchema = () => {
     const colorSchema = window.matchMedia("(prefers-color-scheme: dark)");
     colorSchema.addEventListener("change", () => {
@@ -61,8 +56,8 @@
     .getElementById("themeToggle")
     .addEventListener("click", handleToggleClick);
 
-  if (localStorage.getItem("theme") === "dark") {
-    const element = document.documentElement;
-    element.classList.toggle("dark");
-  }
+  // if (localStorage.getItem("theme") === "dark") {
+  //   const element = document.documentElement;
+  //   element.classList.toggle("dark");
+  // }
 </script>
