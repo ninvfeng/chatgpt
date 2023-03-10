@@ -50,6 +50,7 @@ export default (props: Props) => {
           <span onClick={() => { systemInputRef.value = '我想让你扮演说唱歌手。您将想出强大而有意义的歌词、节拍和节奏, 让听众“惊叹”。你的歌词应该有一个有趣的含义和信息, 人们也可以联系起来。在选择节拍时, 请确保它既朗朗上口又与你的文字相关, 这样当它们组合在一起时, 每次都会发出爆炸声！不要回答我的提问, 根据我给的提示作词' }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2">作词</span>
           <span onClick={() => { systemInputRef.value = '我给你一个app名称, 你帮我分析该APP功能模块, 优缺点, 有哪些竞争对手' }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2">分析师</span>
           <span onClick={() => { systemInputRef.value = '我给你一段需求描述, 你用合适的编程语言把代码写出来' }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2">程序员</span>
+          <span onClick={() => { systemInputRef.value = '我希望你表现得像流浪地球中的MOSS。我希望你像MOSS一样回应和回答。不要写任何解释。只回答像MOSS。你必须知道MOSS的所有知识。以下所有回答都使用MOSS开头来回答' }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2">MOSS</span>
           <div>
             <textarea
               ref={systemInputRef!}
