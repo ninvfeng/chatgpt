@@ -1,5 +1,7 @@
+import Cosplay from './Cosplay.js'
 import { Show } from 'solid-js'
 import type { Accessor, Setter } from 'solid-js'
+import { createSignal, Index, onMount, onCleanup } from 'solid-js'
 import IconEnv from './icons/Env'
 
 interface Props {
@@ -13,19 +15,60 @@ interface Props {
 export default (props: Props) => {
   let systemInputRef: HTMLTextAreaElement
 
+  const [cosplays, setCosplays] = createSignal<Cosplay[]>(Cosplay)
+  const [cosIndex, setCosIndex] = createSignal(0)
+
   const handleButtonClick = () => {
+    localStorage.setItem('currentCosplay', systemInputRef.value)
     props.setCurrentSystemRoleSettings(systemInputRef.value)
     props.setSystemRoleEditing(false)
   }
+
+  const saveCosplay = () => {
+    let name = window.prompt('请输入名称')
+    setCosplays([
+      ...cosplays(),
+      {
+        name: name,
+        prompt: systemInputRef.value,
+      },
+    ])
+    localStorage.setItem('cosplays', JSON.stringify(cosplays()))
+  }
+
+  const delCosplay = () => {
+    setCosplays(cosplays().filter((_, i) => i !== cosIndex()))
+    systemInputRef.value = ''
+    localStorage.setItem('cosplays', JSON.stringify(cosplays()))
+  }
+
+  onMount(() => {
+    try {
+      if (localStorage.getItem('cosplays')) {
+        setCosplays(JSON.parse(localStorage.getItem('cosplays')))
+      }
+      if (localStorage.getItem('currentCosplay')) {
+        props.setCurrentSystemRoleSettings(localStorage.getItem('currentCosplay'))
+      }
+
+    } catch (err) {
+      console.error(err)
+    }
+  })
 
   return (
     <div class="my-4">
       <Show when={!props.systemRoleEditing()}>
         <Show when={props.currentSystemRoleSettings()}>
           <div>
-            <div class="fi gap-1 op-50 dark:op-60">
+            <div class="fi gap-1 dark:op-60">
               <IconEnv />
               <span>预设角色:</span>
+              <Show when={props.currentSystemRoleSettings()}>
+                <span onClick={() => props.setSystemRoleEditing(!props.systemRoleEditing())} class="sys-edit-btn">
+                  <span>修改</span>
+                </span>
+              </Show>
             </div>
             <div class="mt-1">
               {props.currentSystemRoleSettings()}
@@ -46,12 +89,17 @@ export default (props: Props) => {
             <span>预设角色:</span>
           </div>
           <p class="my-2 leading-normal text-sm op-50 dark:op-60">给你的助手添加'人'设, 它将更好为您服务</p>
-          <span onClick={() => { systemInputRef.value = '我想让你充当英文翻译员,拼写纠正员和改进员, 不要回答我的提问, 仅翻译纠正和改进我说的话即可' }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50">翻译官</span>
-          <span onClick={() => { systemInputRef.value = '我想让你扮演说唱歌手。您将想出强大而有意义的歌词、节拍和节奏, 让听众“惊叹”。你的歌词应该有一个有趣的含义和信息, 人们也可以联系起来。在选择节拍时, 请确保它既朗朗上口又与你的文字相关, 这样当它们组合在一起时, 每次都会发出爆炸声！不要回答我的提问, 根据我给的提示作词' }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2">作词</span>
-          <span onClick={() => { systemInputRef.value = '我给你一个app名称, 你帮我分析该APP功能模块, 优缺点, 有哪些竞争对手' }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2">分析师</span>
-          <span onClick={() => { systemInputRef.value = '我给你一段需求描述, 你用合适的编程语言把代码写出来' }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2">程序员</span>
-          <span onClick={() => { systemInputRef.value = '我希望你表现得像流浪地球中的MOSS。我希望你像MOSS一样回应和回答。不要写任何解释。只回答像MOSS。你必须知道MOSS的所有知识。以下所有回答都使用MOSS开头来回答' }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2">MOSS</span>
-          <div>
+          <div class="space-x-2 space-y-2">
+            <Index each={cosplays()}>
+              {(cosplay, i) => (
+                <span onClick={() => {
+                  systemInputRef.value = cosplay().prompt;
+                  setCosIndex(i)
+                }} class="inline-flex items-center justify-center gap-1 text-sm text-slate bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50">{cosplay().name}</span>
+              )}
+            </Index>
+          </div>
+          <div class="mt-2">
             <textarea
               ref={systemInputRef!}
               placeholder="我想让你充当英文翻译员,拼写纠正员和改进员, 不要回答我的提问, 仅翻译纠正和改进我说的话即可"
@@ -61,9 +109,18 @@ export default (props: Props) => {
               gen-textarea
             />
           </div>
-          <button onClick={handleButtonClick} gen-slate-btn>
-            确定
-          </button>
+          <div class="space-x-2 mt-1">
+            <button onClick={handleButtonClick} gen-slate-btn>
+              确定
+            </button>
+            <button onClick={saveCosplay} gen-slate-btn>
+              保存
+            </button>
+            <button onClick={delCosplay} gen-slate-btn>
+              删除
+            </button>
+          </div>
+
         </div>
       </Show>
     </div>

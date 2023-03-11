@@ -18,28 +18,28 @@ export default () => {
   const [controller, setController] = createSignal<AbortController>(null)
 
 
-  onMount(() => {
-    try {
-      if (localStorage.getItem('messageList')) {
-        setMessageList(JSON.parse(localStorage.getItem('messageList')))
-      }
-      if (localStorage.getItem('systemRoleSettings')) {
-        setCurrentSystemRoleSettings(localStorage.getItem('systemRoleSettings'))
-      }
-    } catch (err) {
-      console.error(err)
-    }
+  // onMount(() => {
+  //   try {
+  //     if (localStorage.getItem('messageList')) {
+  //       setMessageList(JSON.parse(localStorage.getItem('messageList')))
+  //     }
+  //     if (localStorage.getItem('systemRoleSettings')) {
+  //       setCurrentSystemRoleSettings(localStorage.getItem('systemRoleSettings'))
+  //     }
+  //   } catch (err) {
+  //     console.error(err)
+  //   }
 
-    window.addEventListener('beforeunload', handleBeforeUnload)
-    onCleanup(() => {
-      window.removeEventListener('beforeunload', handleBeforeUnload)
-    })
-  })
+  //   window.addEventListener('beforeunload', handleBeforeUnload)
+  //   onCleanup(() => {
+  //     window.removeEventListener('beforeunload', handleBeforeUnload)
+  //   })
+  // })
 
-  const handleBeforeUnload = () => {
-    localStorage.setItem('messageList', JSON.stringify(messageList()))
-    localStorage.setItem('systemRoleSettings', currentSystemRoleSettings())
-  }
+  // const handleBeforeUnload = () => {
+  //   localStorage.setItem('messageList', JSON.stringify(messageList()))
+  //   localStorage.setItem('systemRoleSettings', currentSystemRoleSettings())
+  // }
 
   const handleButtonClick = async () => {
     const inputValue = inputRef.value
