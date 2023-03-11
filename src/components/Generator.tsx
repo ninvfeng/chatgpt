@@ -146,7 +146,7 @@ export default () => {
     inputRef.style.height = 'auto';
     setMessageList([])
     setCurrentAssistantMessage('')
-    setCurrentSystemRoleSettings('')
+    // setCurrentSystemRoleSettings('')
   }
 
   const stopStreamFetch = () => {

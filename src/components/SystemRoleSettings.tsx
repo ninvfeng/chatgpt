@@ -69,6 +69,14 @@ export default (props: Props) => {
                   <span>修改</span>
                 </span>
               </Show>
+              <Show when={props.currentSystemRoleSettings()}>
+                <span onClick={() => {
+                  props.setCurrentSystemRoleSettings('')
+                  localStorage.removeItem('currentCosplay')
+                }} class="sys-edit-btn">
+                  <span>清除</span>
+                </span>
+              </Show>
             </div>
             <div class="mt-1">
               {props.currentSystemRoleSettings()}
