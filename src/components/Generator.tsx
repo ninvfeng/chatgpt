@@ -1,4 +1,5 @@
 import Qustion from './Question.js'
+import { getDate } from '@/utils/func'
 import type { ChatMessage } from '@/types'
 import { createSignal, Index, Show, onMount, onCleanup } from 'solid-js'
 import IconClear from './icons/Clear'
@@ -16,25 +17,36 @@ export default () => {
   const [currentAssistantMessage, setCurrentAssistantMessage] = createSignal('')
   const [loading, setLoading] = createSignal(false)
   const [controller, setController] = createSignal<AbortController>(null)
+  const [timesLimit, setTimesLimit] = createSignal(50)
 
+  const token = localStorage.getItem(`token`)
 
-  // onMount(() => {
-  //   try {
-  //     if (localStorage.getItem('messageList')) {
-  //       setMessageList(JSON.parse(localStorage.getItem('messageList')))
-  //     }
-  //     if (localStorage.getItem('systemRoleSettings')) {
-  //       setCurrentSystemRoleSettings(localStorage.getItem('systemRoleSettings'))
-  //     }
-  //   } catch (err) {
-  //     console.error(err)
-  //   }
+  onMount(() => {
+    try {
+      if (localStorage.getItem(`${getDate()}timesLimit`)) {
+        setTimesLimit(parseInt(localStorage.getItem(`${getDate()}timesLimit`)))
+      }
 
-  //   window.addEventListener('beforeunload', handleBeforeUnload)
-  //   onCleanup(() => {
-  //     window.removeEventListener('beforeunload', handleBeforeUnload)
-  //   })
-  // })
+    } catch (err) {
+      console.error(err)
+    }
+
+    // try {
+    //   if (localStorage.getItem('messageList')) {
+    //     setMessageList(JSON.parse(localStorage.getItem('messageList')))
+    //   }
+    //   if (localStorage.getItem('systemRoleSettings')) {
+    //     setCurrentSystemRoleSettings(localStorage.getItem('systemRoleSettings'))
+    //   }
+    // } catch (err) {
+    //   console.error(err)
+    // }
+
+    // window.addEventListener('beforeunload', handleBeforeUnload)
+    // onCleanup(() => {
+    //   window.removeEventListener('beforeunload', handleBeforeUnload)
+    // })
+  })
 
   // const handleBeforeUnload = () => {
   //   localStorage.setItem('messageList', JSON.stringify(messageList()))
@@ -78,12 +90,20 @@ export default () => {
         })
       }
       const timestamp = Date.now()
+
+      // if (timesLimit() <= 0) {
+      //   setCurrentAssistantMessage('很抱歉, 当前额度已用完')
+      //   archiveCurrentMessage()
+      //   return
+      // }
+
       const response = await fetch('/api/generate', {
         method: 'POST',
         body: JSON.stringify({
           messages: requestMessageList,
           time: timestamp,
           pass: storagePassword,
+          token: token,
           sign: await generateSignature({
             t: timestamp,
             m: requestMessageList?.[requestMessageList.length - 1]?.content || '',
@@ -91,6 +111,12 @@ export default () => {
         }),
         signal: controller.signal,
       })
+
+      // 额度
+      setTimesLimit(timesLimit() - (requestMessageList.length + 1) / 2)
+      localStorage.setItem(`${getDate()}timesLimit`, (timesLimit() - 1).toString())
+
+
       if (!response.ok) {
         throw new Error(response.statusText)
       }

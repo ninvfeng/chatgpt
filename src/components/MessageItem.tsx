@@ -71,12 +71,18 @@ export default ({ role, message, showRetry, onRetry }: Props) => {
         <div class="message prose break-words overflow-hidden" innerHTML={htmlString()} />
       </div>
       {showRetry?.() && onRetry && (
-        <div class="fie px-3 mb-2">
-          <div onClick={onRetry} class="gpt-retry-btn">
-            <IconRefresh />
-            <span>重新生成</span>
+        <div>
+          <div class="fie px-3 mb-2 space-x-1">
+            <div onClick={onRetry} class="gpt-retry-btn">
+              <IconRefresh />
+              <span>重新生成</span>
+            </div>
+            {/* <div class="gpt-retry-btn">
+              <span>免费额度3/50</span>
+            </div> */}
           </div>
         </div>
+
       )}
     </div>
   )

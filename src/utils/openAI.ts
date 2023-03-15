@@ -11,7 +11,7 @@ export const generatePayload = (apiKey: string, messages: ChatMessage[]): Reques
     model: 'gpt-3.5-turbo',
     messages,
     temperature: 0.5,
-    stream: true,
+    stream: true
   }),
 })
 
@@ -52,7 +52,7 @@ export const parseOpenAIStream = (rawResponse: Response) => {
       for await (const chunk of rawResponse.body as any) {
         parser.feed(decoder.decode(chunk))
       }
-    },
+    }
   })
 
   return stream
