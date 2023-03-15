@@ -12,14 +12,17 @@ const sitePassword = import.meta.env.SITE_PASSWORD
 const API_URL = import.meta.env.API_URL
 
 export const post: APIRoute = async (context) => {
+
   const body = await context.request.json()
   const { sign, time, messages, pass, token } = body
   if (!messages) {
     return new Response('No input text')
   }
+
   // if (sitePassword && sitePassword !== pass) {
   //   return new Response('Invalid password')
   // }
+
   if (import.meta.env.PROD && !await verifySignature({ t: time, m: messages?.[messages.length - 1]?.content || '', }, sign)) {
     return new Response('Invalid signature')
   }
@@ -31,12 +34,16 @@ export const post: APIRoute = async (context) => {
   // #vercel-end
 
   // 消耗次数
-  const useRes = await fetch(`${API_URL}/plugin/gptfee/useTimes`, {
+  const useRes = await fetch(`${API_URL}/plugin/gptfee/useAmount`, {
     headers: {
       'Content-Type': 'application/json',
       'Token': token
     },
     method: 'POST',
+    body: JSON.stringify({
+      model: 'gpt-3.5-turbo',
+      messages,
+    }),
   })
   const res = await useRes.text();
   const resJson = JSON.parse(res)
