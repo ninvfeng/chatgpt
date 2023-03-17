@@ -6,6 +6,7 @@ import IconClear from './icons/Clear'
 import IconRand from './icons/Rand'
 import MessageItem from './MessageItem'
 import SystemRoleSettings from './SystemRoleSettings'
+import Login from './Login'
 import { generateSignature } from '@/utils/auth'
 import { useThrottleFn } from 'solidjs-use'
 
@@ -228,7 +229,7 @@ export default () => {
           </span>
         </div>
       </div>
-
+      <Login></Login>
       <SystemRoleSettings
         canEdit={() => messageList().length === 0}
         systemRoleEditing={systemRoleEditing}
@@ -247,12 +248,14 @@ export default () => {
           />
         )}
       </Index>
-      {currentAssistantMessage() && (
-        <MessageItem
-          role="assistant"
-          message={currentAssistantMessage}
-        />
-      )}
+      {
+        currentAssistantMessage() && (
+          <MessageItem
+            role="assistant"
+            message={currentAssistantMessage}
+          />
+        )
+      }
       <Show
         when={!loading()}
         fallback={() => (
