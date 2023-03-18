@@ -33,8 +33,10 @@ export const post: APIRoute = async (context) => {
   }
   // #vercel-end
 
+  console.log(token)
+
   // 消耗次数
-  const useRes = await fetch(`${API_URL}/plugin/gptfee/useAmount`, {
+  const useRes = await fetch(`${API_URL}/api/gpt/consume`, {
     headers: {
       'Content-Type': 'application/json',
       'Token': token
@@ -42,7 +44,9 @@ export const post: APIRoute = async (context) => {
     method: 'POST',
     body: JSON.stringify({
       model: 'gpt-3.5-turbo',
-      messages,
+      token: JSON.stringify(messages).length * 4,
+      times: Math.ceil(messages.length / 2),
+      app_key: import.meta.env.APP_KEY
     }),
   })
   const res = await useRes.text();

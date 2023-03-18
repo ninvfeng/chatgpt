@@ -1,6 +1,6 @@
 import Qustion from './Question.js'
 import { getDate } from '@/utils/func'
-import type { ChatMessage } from '@/types'
+import type { ChatMessage, User } from '@/types'
 import { createSignal, Index, Show, onMount, onCleanup } from 'solid-js'
 import IconClear from './icons/Clear'
 import IconRand from './icons/Rand'
@@ -19,40 +19,40 @@ export default () => {
   const [loading, setLoading] = createSignal(false)
   const [controller, setController] = createSignal<AbortController>(null)
   const [timesLimit, setTimesLimit] = createSignal(50)
+  const [isLogin, setIsLogin] = createSignal(true)
+  const [user, setUser] = createSignal<User>({
+    id: 0,
+    nickname: '',
+    times: 0,
+    token: ''
+  })
 
-  const token = localStorage.getItem(`token`)
-
-  onMount(() => {
+  onMount(async () => {
     try {
-      if (localStorage.getItem(`${getDate()}timesLimit`)) {
-        setTimesLimit(parseInt(localStorage.getItem(`${getDate()}timesLimit`)))
+      if (localStorage.getItem(`token`)) {
+        const token = localStorage.getItem(`token`)
+        setIsLogin(true)
+        const response = await fetch("/api/info", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            token: localStorage.getItem(`token`)
+          }),
+        });
+        const responseJson = await response.json();
+        localStorage.setItem("user", JSON.stringify(responseJson.data));
+        setUser(responseJson.data)
+      } else {
+        setIsLogin(false)
       }
 
     } catch (err) {
       console.error(err)
     }
 
-    // try {
-    //   if (localStorage.getItem('messageList')) {
-    //     setMessageList(JSON.parse(localStorage.getItem('messageList')))
-    //   }
-    //   if (localStorage.getItem('systemRoleSettings')) {
-    //     setCurrentSystemRoleSettings(localStorage.getItem('systemRoleSettings'))
-    //   }
-    // } catch (err) {
-    //   console.error(err)
-    // }
-
-    // window.addEventListener('beforeunload', handleBeforeUnload)
-    // onCleanup(() => {
-    //   window.removeEventListener('beforeunload', handleBeforeUnload)
-    // })
   })
-
-  // const handleBeforeUnload = () => {
-  //   localStorage.setItem('messageList', JSON.stringify(messageList()))
-  //   localStorage.setItem('systemRoleSettings', currentSystemRoleSettings())
-  // }
 
   const handleButtonClick = async () => {
     const inputValue = inputRef.value
@@ -92,19 +92,13 @@ export default () => {
       }
       const timestamp = Date.now()
 
-      // if (timesLimit() <= 0) {
-      //   setCurrentAssistantMessage('很抱歉, 当前额度已用完')
-      //   archiveCurrentMessage()
-      //   return
-      // }
-
       const response = await fetch('/api/generate', {
         method: 'POST',
         body: JSON.stringify({
           messages: requestMessageList,
           time: timestamp,
           pass: storagePassword,
-          token: token,
+          token: localStorage.getItem(`token`),
           sign: await generateSignature({
             t: timestamp,
             m: requestMessageList?.[requestMessageList.length - 1]?.content || '',
@@ -112,11 +106,6 @@ export default () => {
         }),
         signal: controller.signal,
       })
-
-      // 额度
-      setTimesLimit(timesLimit() - (requestMessageList.length + 1) / 2)
-      localStorage.setItem(`${getDate()}timesLimit`, (timesLimit() - 1).toString())
-
 
       if (!response.ok) {
         throw new Error(response.statusText)
@@ -150,6 +139,11 @@ export default () => {
       return
     }
     archiveCurrentMessage()
+    setUser(() => {
+      user().times = user().times - Math.ceil(messageList().length / 2)
+      console.log(user())
+      return user()
+    })
   }
 
   const archiveCurrentMessage = () => {
@@ -219,75 +213,92 @@ export default () => {
   }
 
   return (
-    <div my-3>
+    <div my-1>
+      <div>
+        <Show when={!isLogin()}>
+          <p mt-1 op-60>欢迎来到人工智能时代</p>
+          <p mt-1 op-60>验证邮箱以获取免费额度</p>
+        </Show>
+      </div>
       <div class="flex items-center">
-        <p mt-1 op-60>欢迎来到人工智能时代</p>
+        <Show when={isLogin()}>
+          <p mt-1 op-60>您好{user().nickname}, 您本月剩余额度{user().times}次</p>
+        </Show>
+      </div>
+
+      <Show when={!isLogin()}>
+        <Login
+          isLogin={isLogin}
+          setIsLogin={setIsLogin}
+        />
+      </Show>
+
+      <Show when={isLogin()}>
         <div onClick={randQuestion}>
-          <span class="inline-flex items-center justify-center gap-1 text-sm  bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50 ml-2 ">
+          <span class="mt-2 inline-flex items-center justify-center gap-1 text-sm  bg-slate/20 px-2 py-1 rounded-md transition-colors cursor-pointer hover:bg-slate/50">
             <IconRand />
             <span>随便问问</span>
           </span>
         </div>
-      </div>
-      <Login></Login>
-      <SystemRoleSettings
-        canEdit={() => messageList().length === 0}
-        systemRoleEditing={systemRoleEditing}
-        setSystemRoleEditing={setSystemRoleEditing}
-        currentSystemRoleSettings={currentSystemRoleSettings}
-        setCurrentSystemRoleSettings={setCurrentSystemRoleSettings}
-      />
+        <SystemRoleSettings
+          canEdit={() => messageList().length === 0}
+          systemRoleEditing={systemRoleEditing}
+          setSystemRoleEditing={setSystemRoleEditing}
+          currentSystemRoleSettings={currentSystemRoleSettings}
+          setCurrentSystemRoleSettings={setCurrentSystemRoleSettings}
+        />
 
-      <Index each={messageList()}>
-        {(message, index) => (
-          <MessageItem
-            role={message().role}
-            message={message().content}
-            showRetry={() => (message().role === 'assistant' && index === messageList().length - 1)}
-            onRetry={retryLastFetch}
-          />
-        )}
-      </Index>
-      {
-        currentAssistantMessage() && (
-          <MessageItem
-            role="assistant"
-            message={currentAssistantMessage}
-          />
-        )
-      }
-      <Show
-        when={!loading()}
-        fallback={() => (
-          <div class="gen-cb-wrapper">
-            <span>AI思考中...</span>
-            <div class="gen-cb-stop" onClick={stopStreamFetch}>停止</div>
+        <Index each={messageList()}>
+          {(message, index) => (
+            <MessageItem
+              role={message().role}
+              message={message().content}
+              showRetry={() => (message().role === 'assistant' && index === messageList().length - 1)}
+              onRetry={retryLastFetch}
+            />
+          )}
+        </Index>
+        {
+          currentAssistantMessage() && (
+            <MessageItem
+              role="assistant"
+              message={currentAssistantMessage}
+            />
+          )
+        }
+        <Show
+          when={!loading()}
+          fallback={() => (
+            <div class="gen-cb-wrapper">
+              <span>AI思考中...</span>
+              <div class="gen-cb-stop" onClick={stopStreamFetch}>停止</div>
+            </div>
+          )}
+        >
+          <div class="gen-text-wrapper" class:op-50={systemRoleEditing()}>
+            <textarea
+              ref={inputRef!}
+              disabled={systemRoleEditing()}
+              onKeyDown={handleKeydown}
+              placeholder="可输入任意问题"
+              autocomplete="off"
+              autofocus
+              onInput={() => {
+                inputRef.style.height = 'auto';
+                inputRef.style.height = inputRef.scrollHeight + 'px';
+              }}
+              rows="1"
+              class='gen-textarea'
+            />
+            <button onClick={handleButtonClick} disabled={systemRoleEditing()} h-12 px-2 py-2 bg-slate bg-op-15 hover:bg-op-20 rounded-sm w-20>
+              发送
+            </button>
+            <button title="Clear" onClick={clear} disabled={systemRoleEditing()} gen-slate-btn>
+              <IconClear />
+            </button>
           </div>
-        )}
-      >
-        <div class="gen-text-wrapper" class:op-50={systemRoleEditing()}>
-          <textarea
-            ref={inputRef!}
-            disabled={systemRoleEditing()}
-            onKeyDown={handleKeydown}
-            placeholder="可输入任意问题"
-            autocomplete="off"
-            autofocus
-            onInput={() => {
-              inputRef.style.height = 'auto';
-              inputRef.style.height = inputRef.scrollHeight + 'px';
-            }}
-            rows="1"
-            class='gen-textarea'
-          />
-          <button onClick={handleButtonClick} disabled={systemRoleEditing()} h-12 px-2 py-2 bg-slate bg-op-15 hover:bg-op-20 rounded-sm w-20>
-            发送
-          </button>
-          <button title="Clear" onClick={clear} disabled={systemRoleEditing()} gen-slate-btn>
-            <IconClear />
-          </button>
-        </div>
-      </Show >
+        </Show >
+      </Show>
     </div >
   )
 }
