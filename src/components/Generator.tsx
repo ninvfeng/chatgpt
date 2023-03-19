@@ -1,7 +1,7 @@
 import Qustion from './Question.js'
 import { getDate } from '@/utils/func'
 import type { ChatMessage, User } from '@/types'
-import { createSignal, Index, Show, onMount, onCleanup } from 'solid-js'
+import { createSignal, Index, Show, onMount, onCleanup, createEffect, untrack } from 'solid-js'
 import IconClear from './icons/Clear'
 import IconRand from './icons/Rand'
 import MessageItem from './MessageItem'
@@ -22,6 +22,7 @@ export default () => {
   const [isLogin, setIsLogin] = createSignal(true)
   const [user, setUser] = createSignal<User>({
     id: 0,
+    email: '',
     nickname: '',
     times: 0,
     token: ''
@@ -139,11 +140,8 @@ export default () => {
       return
     }
     archiveCurrentMessage()
-    setUser(() => {
-      user().times = user().times - Math.ceil(messageList().length / 2)
-      console.log(user())
-      return user()
-    })
+    user().times = user().times - Math.ceil(messageList().length / 2)
+    setUser({ ...user() })
   }
 
   const archiveCurrentMessage = () => {
@@ -230,6 +228,8 @@ export default () => {
         <Login
           isLogin={isLogin}
           setIsLogin={setIsLogin}
+          user={user}
+          setUser={setUser}
         />
       </Show>
 

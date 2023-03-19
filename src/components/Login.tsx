@@ -1,8 +1,11 @@
+import { User } from '@/types'
 import type { Accessor, Setter } from 'solid-js'
 import { createSignal, Index, Show, onMount, onCleanup } from 'solid-js'
 interface Props {
     isLogin: Accessor<boolean>
     setIsLogin: Setter<boolean>
+    user: Accessor<User>
+    setUser: Setter<User>
 }
 
 export default (props: Props) => {
@@ -27,6 +30,7 @@ export default (props: Props) => {
             localStorage.setItem("token", responseJson.data.token);
             localStorage.setItem("user", JSON.stringify(responseJson.data));
             props.setIsLogin(true)
+            props.setUser(responseJson.data)
         } else {
         }
     }
